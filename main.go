@@ -12,9 +12,10 @@ import (
 func main() {
 	server := &http.Server{
 		Addr:         ":8080",
-		Handler:      router.New(internal.NewEnv()),
+		Handler:      http.TimeoutHandler(router.New(internal.NewEnv()), 1*time.Second, "timeout"),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
+
 	log.Fatal(server.ListenAndServe())
 }
