@@ -9,9 +9,9 @@ import (
 )
 
 func NewShortLinkStorage(db *sql.DB) *ShortLinkStorage {
-  return &ShortLinkStorage{
-    db: db,
-  }
+	return &ShortLinkStorage{
+		db: db,
+	}
 }
 
 type ShortLinkStorage struct {
@@ -24,11 +24,11 @@ type ShortLinkRequest struct {
 }
 
 type ShortLinkResponse struct {
-  id        int64 // primary key -- keep this unexported
-  Link      string
-  Hash      *string   `json:"hash,omitempty"`
-  Suffix    *string   `json:"suffix,omitempty"`
-  CreatedAt time.Time `json:"created_at"`
+	id        int64 // primary key -- keep this unexported
+	Link      string
+	Hash      *string   `json:"hash,omitempty"`
+	Suffix    *string   `json:"suffix,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ErrConflict struct {
@@ -37,36 +37,37 @@ type ErrConflict struct {
 }
 
 func (c ErrConflict) Error() string {
-  if c.error == nil {
-    return "<nil>"
-  }
-  return c.error.Error()
+	if c.error == nil {
+		return "<nil>"
+	}
+	return c.error.Error()
 }
 
 type ErrNotFound struct {
 	error
 }
+
 func (c ErrNotFound) Error() string {
 	return "not found"
 }
 
 func (s *ShortLinkStorage) getLinkFromRequest(url string, suffix *string) (ShortLinkResponse, error) {
-  r := s.db.QueryRow("select id, link, hash, custom_suffix, created_at from shortlinks where link = $1 or custom_suffix = $2", url, ptrToString(suffix))
-  var id int64
-  var link string
-  var hash, suf *string
-  var created time.Time
-  err := r.Scan(&id, &link, &hash, &suf, &created)
-  if r.Err() != nil {
-    return ShortLinkResponse{}, err
-  }
-  return ShortLinkResponse{
-    id:        id,
-    Link:      link,
-    Hash:      hash,
-    Suffix:    suf,
-    CreatedAt: created,
-  }, nil
+	r := s.db.QueryRow("select id, link, hash, custom_suffix, created_at from shortlinks where link = $1 or custom_suffix = $2", url, ptrToString(suffix))
+	var id int64
+	var link string
+	var hash, suf *string
+	var created time.Time
+	err := r.Scan(&id, &link, &hash, &suf, &created)
+	if r.Err() != nil {
+		return ShortLinkResponse{}, err
+	}
+	return ShortLinkResponse{
+		id:        id,
+		Link:      link,
+		Hash:      hash,
+		Suffix:    suf,
+		CreatedAt: created,
+	}, nil
 }
 
 func (s *ShortLinkStorage) GetOneShortLink(shortlink string) (ShortLinkResponse, error) {
@@ -117,10 +118,10 @@ func location(hash *string, suffix *string) string {
 }
 
 func ptrToString(suffix *string) string {
-  if suffix == nil {
-    return ""
-  }
-  return *suffix
+	if suffix == nil {
+		return ""
+	}
+	return *suffix
 }
 
 func (s *ShortLinkStorage) saveLink(req ShortLinkRequest) error {
