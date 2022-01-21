@@ -36,7 +36,10 @@ func (s *ShortLinkStorage) GetStatsForShortLink(shortlink string) (ShortLinkStat
         where shortlink_id = $1
         GROUP BY year, month, day;
         `, r.id)
-	var sts ShortLinkStats
+  if err != nil {
+    return ShortLinkStats{}, fmt.Errorf("s.db.Query err: %w", err)
+  }
+  var sts ShortLinkStats
 	var totalAcross int
 	for rows.Next() {
 		var year, month, day, total int
