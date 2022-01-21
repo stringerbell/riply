@@ -1,0 +1,115 @@
+swagger: "2.0"
+info:
+  description: "Riply is a toy version of bit.ly's link shortener"
+  version: "1.0.0"
+  title: "Riply"
+host: "localhost:8080"
+basePath: "/"
+tags:
+  - name: "link"
+    description: "Make a new shortlink, or see stats"
+schemes:
+  - "http"
+paths:
+  /new:
+    post:
+      tags:
+        - "link"
+      summary: "Add a new link"
+      description: ""
+      operationId: "createLink"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Link body"
+          required: true
+          schema:
+            $ref: "#/definitions/Link"
+      responses:
+        "405":
+          description: "Method Not Allowed"
+        "200":
+          description: "Link Created"
+        "409":
+          description: "Link Already Exists"
+        "422":
+          description: "Invalid Input"
+  /{shortlink}+:
+    get:
+      tags:
+        - "link"
+      summary: "Go to a shortlink's stats"
+      description: "Returns a single shortlink's stats"
+      operationId: "getShortlinkStats"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "shortlink"
+          required: true
+          in: "path"
+          description: "shortlink to see stats for"
+          type: "string"
+      responses:
+        "200":
+          schema:
+            $ref: "#/definitions/ShortlinkStats"
+          description: "shortlink stats"
+        "404":
+          description: "Link not found"
+  /{shortlink}:
+    get:
+      tags:
+        - "link"
+      summary: "Go to a shortlink"
+      description: "Returns a single shortlink"
+      operationId: "getShortlink"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "shortlink"
+          required: true
+          in: "path"
+          description: "shortlink to be forwarded to"
+          type: "string"
+      responses:
+        "302":
+          description: "location of the shortlink"
+        "404":
+          description: "Link not found"
+
+definitions:
+  Link:
+    type: "object"
+    properties:
+      link:
+        type: "string"
+        format: "url"
+        example: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      custom_suffix:
+        type: "string"
+        example: "my-special-suffix"
+  ShortlinkStats:
+    type: "object"
+    properties:
+      total:
+        type: "number"
+        example: 42
+        description: "total times this shortlink has been visited"
+      stats:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            date:
+              type: "string"
+              format: "date"
+              example: "2022-01-21T00:00:00Z"
+              description: "UTC date of when the link was visited"
+            total:
+              type: "number"
+              example: 42
+              description: "Number of times this link was visited on this date"
