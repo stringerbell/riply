@@ -3,6 +3,7 @@ package internal
 import (
 	"database/sql"
 	"log"
+	"os"
 )
 
 type Config struct {
@@ -15,14 +16,14 @@ type Env struct {
 }
 
 func NewEnv() Env {
-	db, err := sql.Open("postgres", "host=db port=5432 user=app password=password dbname=shortlinks sslmode=disable")
+	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	return Env{
 		DB:  db,
-		Cfg: newConfig("localhost:8080"),
+		Cfg: newConfig(os.Getenv("HOST")),
 	}
 }
 
