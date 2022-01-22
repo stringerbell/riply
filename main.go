@@ -10,9 +10,11 @@ import (
 )
 
 func main() {
+  env := internal.NewEnv()
+  defer env.DB.Close()
 	server := &http.Server{
 		Addr:         ":8080",
-		Handler:      http.TimeoutHandler(router.New(internal.NewEnv()), 1*time.Second, "timeout"),
+		Handler:      http.TimeoutHandler(router.New(env), 1*time.Second, "timeout"),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
