@@ -1,4 +1,8 @@
-## Taken from https://docs.docker.com/language/golang/build-images/
+# syntax=docker/dockerfile:1
+
+##
+## Build
+##
 FROM golang:1.17-buster AS build
 
 WORKDIR /app
@@ -6,10 +10,22 @@ WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
-RUN go install github.com/githubnemo/CompileDaemon@latest
 
 COPY . ./
 
 RUN go build -o /main
 
-ENTRYPOINT CompileDaemon -log-prefix=false -build="go build -o /main" -command="/main"
+##
+## Deploy
+##
+FROM gcr.io/distroless/base-debian10
+
+WORKDIR /
+
+COPY --from=build /main /main
+
+EXPOSE 8080
+
+USER nonroot:nonroot
+
+ENTRYPOINT ["/main"]
