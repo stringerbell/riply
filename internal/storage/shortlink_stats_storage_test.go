@@ -4,8 +4,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
-
-	_ "github.com/lib/pq"
 )
 
 func TestShortLinkStorage_RecordHit(t *testing.T) {

@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"log"
@@ -14,7 +15,7 @@ import (
 var db *sql.DB
 
 func TestMain(m *testing.M) {
-	if os.Getenv("INTEG") == "" {
+	if os.Getenv("INTEG") != "" {
 		fmt.Println("skipping storage tests...")
 		return
 	}
@@ -53,7 +54,7 @@ func TestMain(m *testing.M) {
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	pool.MaxWait = 120 * time.Second
 	if err = pool.Retry(func() error {
-		db, err = sql.Open("postgres", databaseUrl)
+		db, err = sql.Open("pgx", databaseUrl)
 		if err != nil {
 			return err
 		}
