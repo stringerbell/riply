@@ -15,6 +15,6 @@ Running integration tests:
 
 Deploying:
 
-Make sure you have fly installed
+Make sure you have [fly](https://fly.io/docs/getting-started/) installed
 
 `fly deploy`
